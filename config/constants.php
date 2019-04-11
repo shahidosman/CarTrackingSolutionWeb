@@ -8,4 +8,5 @@
 
     return [
         'app-name'=> 'Car Tracking Solution',
+        'passengers'=> 'Passengers',
     ];

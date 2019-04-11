@@ -18,10 +18,15 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware' => ['admin']],function (){
+Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware' => ['admin','auth']],function (){
     Route::get('/dashboard','AdminDashboardController@index')->name('dashboard');
+    Route::resource('passengers','ManagePassengerController');
 });
 
 Route::get('error','ErrorHandlerController@index');
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/test-dashboard',function (){
+   return view('admin.test-dashboard');
+});

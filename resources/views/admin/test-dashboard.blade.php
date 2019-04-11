@@ -17,6 +17,7 @@
                 sessionStorage.fonts = true;
             }
         });
+
     </script>
     <!--end::Web font -->
 
