@@ -9,4 +9,6 @@
     return [
         'app-name'=> 'Car Tracking Solution',
         'passengers'=> 'Passengers',
+        'drivers'=> 'Drivers',
+        'drivers-cars'=> 'Driver Cars',
     ];

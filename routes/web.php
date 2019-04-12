@@ -21,6 +21,7 @@ Auth::routes();
 Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware' => ['admin','auth']],function (){
     Route::get('/dashboard','AdminDashboardController@index')->name('dashboard');
     Route::resource('passengers','ManagePassengerController');
+    Route::resource('drivers','ManageDriverController');
 });
 
 Route::get('error','ErrorHandlerController@index');
