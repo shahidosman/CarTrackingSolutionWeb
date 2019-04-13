@@ -22,6 +22,7 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware'
     Route::get('/dashboard','AdminDashboardController@index')->name('dashboard');
     Route::resource('passengers','ManagePassengerController');
     Route::resource('drivers','ManageDriverController');
+    Route::resource('driver-cars','ManageDriverCarController');
 });
 
 Route::get('error','ErrorHandlerController@index');
