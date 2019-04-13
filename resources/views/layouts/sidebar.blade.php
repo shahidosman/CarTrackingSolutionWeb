@@ -50,6 +50,12 @@
                                     <span></span></i>
                                 <span class="m-menu__link-text">{{ Config('constants.driver-cars') }}</span></a>
                         </li>
+                        <li class="m-menu__item " aria-haspopup="true">
+                            <a href="{{url('admin/driver-live-location')}}" class="m-menu__link ">
+                                <i class="m-menu__link-bullet m-menu__link-bullet--dot">
+                                    <span></span></i>
+                                <span class="m-menu__link-text">{{ Config('constants.driver-live-location') }}</span></a>
+                        </li>
                     </ul>
                 </div>
             </li>

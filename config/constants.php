@@ -11,4 +11,5 @@
         'passengers'=> 'Passengers',
         'drivers'=> 'Drivers',
         'driver-cars'=> 'Driver Cars',
+        'driver-live-location' => 'Drivers Live Locations',
     ];

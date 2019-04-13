@@ -20,6 +20,7 @@ Auth::routes();
 
 Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware' => ['admin','auth']],function (){
     Route::get('/dashboard','AdminDashboardController@index')->name('dashboard');
+    Route::get('/driver-live-location','ManageDriverController@tracker');
     Route::resource('passengers','ManagePassengerController');
     Route::resource('drivers','ManageDriverController');
     Route::resource('driver-cars','ManageDriverCarController');

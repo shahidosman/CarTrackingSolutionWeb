@@ -204,4 +204,9 @@ class ManageDriverController extends Controller
             return response()->json(['data'=>false]);
         }
     }
+
+    public function tracker()
+    {
+        return view('admin.drivers.live-location');
+    }
 }
