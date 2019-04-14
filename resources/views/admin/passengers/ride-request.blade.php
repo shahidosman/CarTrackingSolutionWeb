@@ -1,6 +1,31 @@
 @extends('layouts.admin-app')
 @section('google-script')
-    <script src="https://maps.google.com/maps/api/js?key={{env('GOOGLE_MAP')}}"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key={{env('GOOGLE_MAP')}}&libraries=places"></script>
+<style>
+    .map-control {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    #pick_up {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 50%;
+    }
+    #pick_up:focus {
+        border-color: #4d90fe;
+    }
+</style>
 @stop
 @section('content')
     <div class="m-grid m-grid--hor m-grid--root m-page">
@@ -13,7 +38,7 @@
                 <div class="m-subheader ">
                     <div class="d-flex align-items-center">
                         <div class="mr-auto">
-                            <h3 class="m-subheader__title m-subheader__title--separator">{{Config('constants.driver-live-location')}}</h3>
+                            <h3 class="m-subheader__title m-subheader__title--separator">{{Config('constants.ride-request')}}</h3>
                             <ul class="m-subheader__breadcrumbs m-nav m-nav--inline">
                                 <li class="m-nav__item m-nav__item--home">
                                     <a href="{{url('/admin/dashboard')}}" class="m-nav__link m-nav__link--icon">
@@ -41,6 +66,159 @@
                     </div>
                 </div>
                 <div class="m-content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!--begin::Portlet-->
+                            <div class="m-portlet m-portlet--tab">
+                                <div class="m-portlet__head">
+                                    <div class="m-portlet__head-caption">
+                                        <div class="m-portlet__head-title">
+						<span class="m-portlet__head-icon m--hide">
+						<i class="la la-gear"></i>
+						</span>
+                                            <h3 class="m-portlet__head-text">
+                                                Passenger Ride Request Form
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--begin::Form-->
+                                <form class="m-form m-form--fit m-form--label-align-right" method="post"
+                                      action="{{url('admin/ride-request')}}">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $existing == null ? '' : $existing->id }}">
+                                    <div class="m-portlet__body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group m-form__group">
+                                                    <label for="driver_id">Select passenger</label>
+                                                    <select class="form-control m-input m-input--square"
+                                                            name="driver_id">
+                                                        <?php $null_count = 1; ?>
+                                                        @foreach($passenger_options as $passenger)
+                                                            @if($passenger->passenger_id==null)
+                                                                <option value="{{$passenger->id}}"
+                                                                        @if($existing != null && $existing->passenger_id == $passenger->passenger_id) selected @endif>
+                                                                    {{$passenger->fname. " ". $passenger->lname}}</option>
+                                                            @endif
+                                                            <?php
+                                                            $null_count++;
+                                                            ?>
+                                                        @endforeach
+                                                        @if($null_count == count($passenger_options) || $null_count == 1)
+                                                            <option value="">No Passenger</option>
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                                @if ($errors->has('passenger_id'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('passenger_id') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group m-form__group">
+                                                    <label for="pick_loc_address">Pick up location Address</label>
+                                                    <input type="text" name="pick_loc_address"
+                                                           value="{{ $existing == null ? old('pick_loc_address') : $existing->pick_loc_address }}"
+                                                           class="form-control m-input"
+                                                           aria-describedby="emailHelp" id="pick_loc_address" readonly>
+                                                </div>
+                                                @if ($errors->has('pick_loc_address'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('pick_loc_address') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group m-form__group">
+                                                    <label for="pick_loc_lat">Pick up Latitute</label>
+                                                    <input type="text" name="pick_loc_lat"
+                                                           value="{{ $existing == null ? old('pick_loc_lat') : $existing->pick_loc_lat }}"
+                                                           class="form-control m-input" id="pick_loc_lat"
+                                                           aria-describedby="emailHelp" readonly>
+                                                </div>
+                                                @if ($errors->has('pick_loc_lat'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('pick_loc_lat') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group m-form__group">
+                                                    <label for="pick_loc_long">Pick up Longitude</label>
+                                                    <input type="text" name="pick_loc_long"
+                                                           value="{{ $existing == null ? old('pick_loc_long') : $existing->pick_loc_long }}"
+                                                           class="form-control m-input" id="pick_loc_long"
+                                                           aria-describedby="emailHelp" readonly>
+                                                </div>
+                                                @if ($errors->has('pick_loc_long'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('pick_loc_long') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group m-form__group">
+                                                    <label for="dest_loc_address">Destination Location Address</label>
+                                                    <input type="text" name="dest_loc_address"
+                                                           value="{{ $existing == null ? old('dest_loc_address') : $existing->dest_loc_address }}"
+                                                           class="form-control m-input" id="dest_loc_address"
+                                                           aria-describedby="emailHelp"
+                                                           id="dest_loc_address" readonly>
+                                                </div>
+                                                @if ($errors->has('dest_loc_address'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('dest_loc_address') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group m-form__group">
+                                                    <label for="dest_loc_lat">Destination Location Latitude</label>
+                                                    <input type="text" name="dest_loc_lat"
+                                                           value="{{ $existing == null ? old('dest_loc_lat') : $existing->dest_loc_lat }}"
+                                                           class="form-control m-input" id="dest_loc_lat" readonly>
+                                                </div>
+                                                @if ($errors->has('dest_loc_lat'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('dest_loc_lat') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group m-form__group">
+                                                    <label for="dest_loc_long">Destination Location Longitude</label>
+                                                    <input type="text" name="dest_loc_long"
+                                                           value="{{ $existing == null ? old('dest_loc_long') : $existing->dest_loc_long }}"
+                                                           class="form-control m-input" id="dest_loc_long" readonly>
+                                                </div>
+                                                @if ($errors->has('dest_loc_long'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('dest_loc_long') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="m-portlet__foot m-portlet__foot--fit">
+                                        <div class="m-form__actions">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            <button type="reset" class="btn btn-secondary">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!--end::Form-->
+                            </div>
+                            <!--end::Portlet-->
+                        </div>
+                    </div>
+
+                    <input id="pick_up" type="text" placeholder="Enter Location" class="map-control">
+                    <button id="enter_dest" class="btn btn-success">Enter Destination Location</button>
+                    <button id="enter_pick" class="btn btn-danger">Enter Pick Up Location Again</button>
                     <div id="map" style="height:600px;">
                     </div>
                 </div>
@@ -558,36 +736,124 @@
     <script>
         // In the following example, markers appear when the user clicks on the map.
         // Each marker is labeled with a single alphabetical character.
-        var labels = 'SIDDIQ';
-        var labelIndex = 0;
+        // var labels = 'SIDDIQ';
+        // var labelIndex = 0;
+        //
+        // function initialize() {
+        //     var uk = { lat: 51.50, lng: -0.11 };
+        //     var map = new google.maps.Map(document.getElementById('map'), {
+        //         zoom: 12,
+        //         center: uk
+        //     });
+        //
+        //     // This event listener calls addMarker() when the map is clicked.
+        //     google.maps.event.addListener(map, 'click', function(event) {
+        //         addMarker(event.latLng, map);
+        //     });
+        //
+        //     // Add a marker at the center of the map.
+        //     addMarker(uk, map);
+        // }
+        //
+        // // Adds a marker to the map.
+        // function addMarker(location, map) {
+        //     // Add the marker at the clicked location, and add the next-available label
+        //     // from the array of alphabetical characters.
+        //     var marker = new google.maps.Marker({
+        //         position: location,
+        //         label: labels[labelIndex++ % labels.length],
+        //         map: map
+        //     });
+        // }
 
-        function initialize() {
-            var uk = { lat: 51.50, lng: -0.11 };
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: uk
+        $(document).ready(function () {
+            initMap();
+            function initMap() {
+                alert("YES");
+                var uk = { lat: 51.50, lng: -0.11 };
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 12,
+                    center: uk
+                });
+                var input = document.getElementById('pick_up');
+                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+                var autocomplete = new google.maps.places.Autocomplete(input);
+                autocomplete.bindTo('bounds', map);
+
+                var infowindow = new google.maps.InfoWindow();
+                var marker = new google.maps.Marker({
+                    map: map,
+                    anchorPoint: new google.maps.Point(0, -29)
+                });
+
+                autocomplete.addListener('place_changed', function() {
+                    infowindow.close();
+                    marker.setVisible(false);
+                    var place = autocomplete.getPlace();
+
+                    /* If the place has a geometry, then present it on a map. */
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                    } else {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(17);
+                    }
+                    marker.setIcon(({
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(35, 35)
+                    }));
+                    marker.setPosition(place.geometry.location);
+                    marker.setVisible(true);
+
+                    var address = '';
+                    if (place.address_components) {
+                        address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                        ].join(' ');
+                    }
+
+                    infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+                    infowindow.open(map, marker);
+
+                    /* Location details */
+                    if(destination==false)
+                    {
+                        document.getElementById('pick_loc_address').value = place.formatted_address;
+                        document.getElementById('pick_loc_lat').value = place.geometry.location.lat();
+                        document.getElementById('pick_loc_long').value = place.geometry.location.lng();
+                    }
+                    else
+                    {
+                        document.getElementById('dest_loc_address').value = place.formatted_address;
+                        document.getElementById('dest_loc_lat').value = place.geometry.location.lat();
+                        document.getElementById('dest_loc_long').value = place.geometry.location.lng();
+                    }
+                });
+            }
+
+            var destination = false;
+//            google.maps.event.addDomListener(window, 'load', initMap);
+
+            $('#enter_dest').click(function () {
+                $('#pick_up').val('');
+                $('#pick_up').focus();
+                destination = true;
             });
 
-            // This event listener calls addMarker() when the map is clicked.
-            google.maps.event.addListener(map, 'click', function(event) {
-                addMarker(event.latLng, map);
+            $('#enter_pick').click(function () {
+                $('#pick_up').val('');
+               $('#pick_loc_address').val("");
+               $('#pick_loc_lat').val("");
+               $('#pick_loc_long').val("");
+               destination = false;
             });
+        });
 
-            // Add a marker at the center of the map.
-            addMarker(uk, map);
-        }
-
-        // Adds a marker to the map.
-        function addMarker(location, map) {
-            // Add the marker at the clicked location, and add the next-available label
-            // from the array of alphabetical characters.
-            var marker = new google.maps.Marker({
-                position: location,
-                label: labels[labelIndex++ % labels.length],
-                map: map
-            });
-        }
-
-        google.maps.event.addDomListener(window, 'load', initialize);
     </script>
 @stop

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Passenger;
+use App\RideRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Mockery\Generator\StringManipulation\Pass\Pass;
@@ -98,6 +99,18 @@ echo"<pre>"; print_r('var'); exit;
     }
 
     public function delete($id)
+    {
+        echo"<pre>"; print_r('var'); exit;
+    }
+
+    public function ride_requests()
+    {
+        $passenger_options = Passenger::passenger_ride_processed();
+        $existing = null;
+        return view('admin.passengers.ride-request',compact('passenger_options','existing'));
+    }
+
+    public function store_ride_request(Request $request)
     {
         echo"<pre>"; print_r('var'); exit;
     }

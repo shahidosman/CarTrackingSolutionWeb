@@ -7,9 +7,8 @@
     <title>{{Config::get('constants.app-name')}} | Dashboard</title>
     <meta name="description" content="Latest updates and statistic charts">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
-    <script src="https://maps.google.com/maps/api/js?key=AIzaSyCSWgOpdJcUeZty95QaZK9gmvETEsIuwug"></script>
 
-    @yield('google-script');
+    @yield('google-script')
     <!--begin::Web font -->
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
     <script>

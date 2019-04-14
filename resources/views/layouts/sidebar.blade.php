@@ -27,6 +27,12 @@
                                     <span></span></i>
                                 <span class="m-menu__link-text">{{ Config('constants.passengers') }}</span></a>
                         </li>
+                        <li class="m-menu__item " aria-haspopup="true">
+                            <a href="{{url('admin/ride-request')}}" class="m-menu__link ">
+                                <i class="m-menu__link-bullet m-menu__link-bullet--dot">
+                                    <span></span></i>
+                                <span class="m-menu__link-text">{{ Config('constants.ride-request') }}</span></a>
+                        </li>
                     </ul>
                 </div>
             </li>
