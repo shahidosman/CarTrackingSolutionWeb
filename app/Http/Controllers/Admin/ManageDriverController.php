@@ -92,11 +92,12 @@ class ManageDriverController extends Controller
             }
             return redirect('admin/drivers');
         }
+        //Unique Email and Unique Driver Each Time
         $this->validate($request,[
             'fname' => 'required|regex:/^[a-zA-Z]+$/u|max:120|min:3',
             'lname' => 'required|regex:/^[a-zA-Z]+$/u|max:120|min:3',
-            'email' => 'required|email|unique:passengers',
-            'phone_number' => 'required|regex:/(447)[0-9]{9}/',
+            'email' => 'required|email|unique:drivers',
+            'phone_number' => 'required|unique:drivers|regex:/(447)[0-9]{9}/',
             'license' => 'required',
             'city' => 'required|regex:/^[a-z A-Z]+$/u|max:120|min:3',
             'country' => 'required|regex:/^[a-z A-Z]+$/u|max:120|min:3',

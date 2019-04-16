@@ -66,6 +66,13 @@
                     </div>
                 </div>
                 <div class="m-content">
+                    @if(Session::has('success'))
+                    <div class="m-alert m-alert--outline alert alert-success alert-dismissible fade show" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        </button>
+                        <strong>Congratulations!</strong> {{Session::get('success')}}
+                    </div>
+                    @endif
                     <div class="row">
                         <div class="col-md-12">
                             <!--begin::Portlet-->
@@ -93,21 +100,19 @@
                                                 <div class="form-group m-form__group">
                                                     <label for="driver_id">Select passenger</label>
                                                     <select class="form-control m-input m-input--square"
-                                                            name="driver_id">
-                                                        <?php $null_count = 1; ?>
+                                                            name="passenger_id">
                                                         @foreach($passenger_options as $passenger)
                                                             @if($passenger->passenger_id==null)
                                                                 <option value="{{$passenger->id}}"
                                                                         @if($existing != null && $existing->passenger_id == $passenger->passenger_id) selected @endif>
                                                                     {{$passenger->fname. " ". $passenger->lname}}</option>
                                                             @endif
-                                                            <?php
-                                                            $null_count++;
-                                                            ?>
+                                                                @if($passenger->passenger_id!=null && ($passenger->status == "Processed" || $passenger->status == "Cancelled"))
+                                                                    <option value="{{$passenger->id}}"
+                                                                            @if($existing != null && $existing->passenger_id == $passenger->passenger_id) selected @endif>
+                                                                        {{$passenger->fname. " ". $passenger->lname}}</option>
+                                                                @endif
                                                         @endforeach
-                                                        @if($null_count == count($passenger_options) || $null_count == 1)
-                                                            <option value="">No Passenger</option>
-                                                        @endif
                                                     </select>
                                                 </div>
                                                 @if ($errors->has('passenger_id'))
@@ -160,7 +165,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group m-form__group">
                                                     <label for="dest_loc_address">Destination Location Address</label>
                                                     <input type="text" name="dest_loc_address"
@@ -175,7 +180,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group m-form__group">
                                                     <label for="dest_loc_lat">Destination Location Latitude</label>
                                                     <input type="text" name="dest_loc_lat"
@@ -188,7 +193,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group m-form__group">
                                                     <label for="dest_loc_long">Destination Location Longitude</label>
                                                     <input type="text" name="dest_loc_long"
@@ -198,6 +203,28 @@
                                                 @if ($errors->has('dest_loc_long'))
                                                     <span class="invalid-feedback" style="display: block" role="alert">
                                                         <strong>{{ $errors->first('dest_loc_long') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group m-form__group">
+                                                    <label for="request_mode">Request Mode</label>
+                                                    <select class="form-control m-input m-input--square"
+                                                            name="request_mode">
+                                                        <option value="Mobile"
+                                                                @if($existing != null && $existing->request_mode == "Mobile") selected @endif>
+                                                            Mobile
+                                                        </option>
+                                                        <option value="Email"
+                                                                @if($existing != null && $existing->request_mode == "Email") selected @endif>
+                                                            Email
+                                                        </option>
+                                                    </select>
+
+                                                </div>
+                                                @if ($errors->has('request_mode'))
+                                                    <span class="invalid-feedback" style="display: block" role="alert">
+                                                        <strong>{{ $errors->first('request_mode') }}</strong>
                                                     </span>
                                                 @endif
                                             </div>
@@ -769,7 +796,6 @@
         $(document).ready(function () {
             initMap();
             function initMap() {
-                alert("YES");
                 var uk = { lat: 51.50, lng: -0.11 };
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 12,

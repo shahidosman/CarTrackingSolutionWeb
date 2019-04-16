@@ -3,9 +3,21 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Driver extends Model
+class Driver extends Model implements JWTSubject
 {
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
     public function drivercar()
     {
         return $this->hasOne('App\DriverCar','driver_id');
