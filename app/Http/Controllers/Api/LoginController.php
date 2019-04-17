@@ -53,4 +53,5 @@ class LoginController extends Controller
             'expires_in' => auth('api')->factory()->getTTL() * 60
         );
     }
+
 }

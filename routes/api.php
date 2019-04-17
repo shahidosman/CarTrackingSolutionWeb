@@ -22,4 +22,6 @@ Route::group([
     'prefix' => 'driver'
 ],function ($router){
    Route::post('login','Api\LoginController@login');
+   Route::post('token','Api\DriverController@save_token');
+   Route::post('live-location','Api\DriverController@live_location');
 });
