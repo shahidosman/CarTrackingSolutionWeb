@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Driver;
 use App\DriverLocation;
+use App\Events\LiveLocationByDriver;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
@@ -58,7 +59,7 @@ class DriverController extends Controller
             $driver_location->longitude = $input['longitude'];
             $driver_location->latitude = $input['latitude'];
             $driver_location->save();
-            // ToDO Raise Event With Current Longitude and Latitude For Real Time map for the driver
+            event(new LiveLocationByDriver($driver_location));
             return response()->json(['success'=>true,'message'=>'Saved Successfully'],200);
         }
         else {

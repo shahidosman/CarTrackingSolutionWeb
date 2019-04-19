@@ -1,4 +1,7 @@
 @extends('layouts.admin-app')
+@section('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@stop
 @section('google-script')
     <script src="https://maps.google.com/maps/api/js?key={{env('GOOGLE_MAP')}}"></script>
 @stop
@@ -555,37 +558,78 @@
     <input type="hidden" id="delete_id">
 @stop
 @section('scripts')
+    <script src="{{asset('js/pusher.min.js')}}"></script>
     <script>
         // In the following example, markers appear when the user clicks on the map.
         // Each marker is labeled with a single alphabetical character.
-        var labels = 'SIDDIQ';
+        //Pusher.logToConsole = true;
+        var labels = '';
+        var lat = '';
+        var lng = '';
         var labelIndex = 0;
+        var  map = '';
+        var lineCoordinates = [];
+        var marker = [];
+        var drivers = [];
+        var arrMarker = {};
+        var key = '<?php echo env('PUSHER_APP_KEY') ?>';
+        var pusher = new Pusher(key,{
+            cluster: 'ap2',
+            forceTLS: true
+            });
+        var channel = pusher.subscribe('location-changed');
+        channel.bind('App\\Events\\LiveLocationByDriver',function (data) {
+            //ToDo Update Location w.r.t each driver and show marker
+            labels = data.driver_name;
+            labels = labels.toUpperCase();
+            update_map(parseFloat(data.latitude),parseFloat(data.longitude),data.driver_id);
+        });
+
+        function update_map(lat,long,driver_id) {
+            var loc = { lat: lat, lng: long };
+            if(!drivers.includes(driver_id))
+            {
+                drivers.push(driver_id);
+                addMarker(loc,this.map,driver_id);
+            }
+            else
+            {
+                var marker = arrMarker[driver_id];
+                 changeMarkerLoc(marker,lat,long);
+            }
+        }
 
         function initialize() {
             var uk = { lat: 51.50, lng: -0.11 };
-            var map = new google.maps.Map(document.getElementById('map'), {
+            this.lat = uk['lat'];
+            this.lng = uk['lng'];
+             this.map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
                 center: uk
             });
-
-            // This event listener calls addMarker() when the map is clicked.
-            google.maps.event.addListener(map, 'click', function(event) {
-                addMarker(event.latLng, map);
-            });
-
-            // Add a marker at the center of the map.
-            addMarker(uk, map);
         }
 
         // Adds a marker to the map.
-        function addMarker(location, map) {
+        function addMarker(location, map, driver_id) {
             // Add the marker at the clicked location, and add the next-available label
             // from the array of alphabetical characters.
-            var marker = new google.maps.Marker({
+            this.marker = new google.maps.Marker({
                 position: location,
-                label: labels[labelIndex++ % labels.length],
-                map: map
+                label: labels[labelIndex],
+                map: map,
+
+                // Custom Attributes
+                driver_id: driver_id
             });
+
+            arrMarker[driver_id] = this.marker;
+        }
+
+        // Change Marker Location
+        function changeMarkerLoc(dmarker,lat,long)
+        {
+            var latlng = new google.maps.LatLng(lat,long);
+            dmarker.setPosition(latlng);
         }
 
         google.maps.event.addDomListener(window, 'load', initialize);
