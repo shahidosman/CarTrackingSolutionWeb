@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72043336-c319-44c2-b025-3aa341980cef" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/public/js/pusher.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/DriverController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/DriverController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/admin/drivers/live-location.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/admin/drivers/live-location.blade.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -53,11 +49,10 @@
       <file leaf-file-name="live-location.blade.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/resources/views/admin/drivers/live-location.blade.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="597" column="50" selection-start-line="597" selection-start-column="50" selection-end-line="597" selection-end-column="50" />
+            <state relative-caret-position="406">
+              <caret line="601" column="61" selection-start-line="601" selection-start-column="61" selection-end-line="601" selection-end-column="61" />
               <folding>
                 <element signature="e#32742#32749#1#HTML" expanded="true" />
-                <element signature="e#34746#35021#0#HTML" />
               </folding>
             </state>
           </provider>
@@ -400,12 +395,12 @@
       <workItem from="1555498963909" duration="11033000" />
       <workItem from="1555583721849" duration="21593000" />
       <workItem from="1555668176967" duration="4613000" />
-      <workItem from="1555687060711" duration="2995000" />
+      <workItem from="1555687060711" duration="7565000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="238890000" />
+    <option name="totallyTimeSpent" value="243460000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -785,11 +780,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/resources/views/admin/drivers/live-location.blade.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="597" column="50" selection-start-line="597" selection-start-column="50" selection-end-line="597" selection-end-column="50" />
+        <state relative-caret-position="406">
+          <caret line="601" column="61" selection-start-line="601" selection-start-column="61" selection-end-line="601" selection-end-column="61" />
           <folding>
             <element signature="e#32742#32749#1#HTML" expanded="true" />
-            <element signature="e#34746#35021#0#HTML" />
           </folding>
         </state>
       </provider>

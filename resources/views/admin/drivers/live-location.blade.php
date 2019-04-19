@@ -568,7 +568,8 @@
         var lng = '';
         var labelIndex = 0;
         var  map = '';
-        var lineCoordinates = [];
+        var Coordinates = [];
+        var driverCoordinates = {};
         var marker = [];
         var drivers = [];
         var arrMarker = {};
@@ -590,12 +591,16 @@
             if(!drivers.includes(driver_id))
             {
                 drivers.push(driver_id);
+                driverCoordinates.driver_id = new Array();
+                driverCoordinates.driver_id.push(new google.maps.LatLng(lat,long));
                 addMarker(loc,this.map,driver_id);
             }
             else
             {
+                driverCoordinates.driver_id.push(new google.maps.LatLng(lat,long));
                 var marker = arrMarker[driver_id];
-                 changeMarkerLoc(marker,lat,long);
+                var driverPath = driverCoordinates.driver_id;
+                changeMarkerLoc(marker,lat,long,driverPath);
             }
         }
 
@@ -626,10 +631,19 @@
         }
 
         // Change Marker Location
-        function changeMarkerLoc(dmarker,lat,long)
+        function changeMarkerLoc(dmarker,lat,long,path)
         {
+            console.log(path);
             var latlng = new google.maps.LatLng(lat,long);
             dmarker.setPosition(latlng);
+            var lineCoordinatePath = new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                map: this.map,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
         }
 
         google.maps.event.addDomListener(window, 'load', initialize);
