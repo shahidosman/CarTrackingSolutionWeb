@@ -23,6 +23,9 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware'
     Route::get('/driver-live-location','ManageDriverController@tracker');
     Route::get('/ride-request','ManagePassengerController@ride_requests');
     Route::post('/ride-request','ManagePassengerController@store_ride_request');
+    Route::get('/assign-driver','ManageRideController@assign_driver');
+    Route::get('/driver-for-ride/{id}','ManageRideController@driver_for_ride');
+    Route::get('/send-driver/{driver_id}/{request_id}','ManageRideController@send_driver');
     Route::resource('passengers','ManagePassengerController');
     Route::resource('drivers','ManageDriverController');
     Route::resource('driver-cars','ManageDriverCarController');
