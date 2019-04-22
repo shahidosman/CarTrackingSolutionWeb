@@ -21,7 +21,7 @@ class DriverController extends Controller
         $validator = Validator::make($input,$rules);
         if($validator->fails())
         {
-            return response()->json(['success'=>false,'errors'=>$validator->message()],400);
+            return response()->json(['success'=>false,'errors'=>$validator->errors()],400);
         }
 
         $user = Driver::find($input['id']);
@@ -48,7 +48,7 @@ class DriverController extends Controller
         $validator = Validator::make($input,$rules);
         if($validator->fails())
         {
-            return response()->json(['success'=>false,'errors'=>$validator->message()],400);
+            return response()->json(['success'=>false,'errors'=>$validator->errors()],400);
         }
 
         $user = Driver::find($input['id']);

@@ -78,4 +78,24 @@ class ManageRideController extends Controller
         }
         return redirect('/admin/assign-driver');
     }
+
+    public function current_rides()
+    {
+        //ToDo Show a list of rides active,
+        // ToDo On change of selection show driver_name,current_status {Driver On Way or picker ride}
+        // ToDo if driver is on the way to ride
+            // ToDo Show driver current location on map as well as ride pick up location
+            // ToDo Show estimated time and distance to ride pick up
+        //ToDo if driver picked up the ride show current location,estimated time and distance
+        //ToDo to drop off location if this location is set on the map
+    }
+
+    public function complete_rides()
+    {
+        //ToDo Show a list of complete rides A clue is to show ride with ride
+        //ToDo request whose status is complet
+        //ToDo On Change of selection show a table
+        //ToDo Show driver_name,pick_up_loc,drop_off_loc,est distance, est time,
+        //ToDo Show three buttons, Video stream, show path
+    }
 }

@@ -13,5 +13,5 @@
         'driver-cars'=> 'Driver Cars',
         'driver-live-location' => 'Drivers Live Locations',
         'ride-request' => 'Ride Requests',
-        'driver-ride' => 'Assign Driver To Ride'
+        'driver-ride' => 'Assign/Send Driver To Ride'
     ];

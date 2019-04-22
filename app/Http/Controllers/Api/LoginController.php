@@ -25,7 +25,7 @@ class LoginController extends Controller
         $validator = Validator::make($input,$rules);
         if($validator->fails())
         {
-            return response()->json(['success'=>false,'errors'=>$validator->messages()],400);
+            return response()->json(['success'=>false,'errors'=>$validator->errors()],400);
         }
 
         $user = Driver::where('phone_number','=',$input)->select([
