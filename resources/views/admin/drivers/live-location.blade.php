@@ -626,7 +626,8 @@
                 // Custom Attributes
                 driver_id: driver_id
             });
-
+            map.setZoom(17);
+            map.panTo(location);
             arrMarker[driver_id] = this.marker;
         }
 
@@ -635,6 +636,8 @@
         {
             var latlng = new google.maps.LatLng(lat,long);
             dmarker.setPosition(latlng);
+            map.setZoom(17);
+            map.panTo(latlng);
             var lineCoordinatePath = new google.maps.Polyline({
                 path: path,
                 geodesic: true,

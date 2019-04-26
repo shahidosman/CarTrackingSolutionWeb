@@ -92,7 +92,7 @@ class ManageRideController extends Controller
             $update_dest_loc = $database
                 ->getReference('userData/'.$driver->phone_number.'/user_drop_loc')
                 ->update([
-                    'lat' => $ride_request->det_loc_lat,
+                    'lat' => $ride_request->dest_loc_lat,
                     'lng' => $ride_request->dest_loc_long,
                 ]);
         }
@@ -232,5 +232,15 @@ class ManageRideController extends Controller
     {
         $drivers = Driver::all();
         return view('admin.rides.complete-rides',compact('drivers'));
+    }
+
+    public function complete_rides_by_driver($id)
+    {
+        //ToDo we have only id of driver
+    }
+
+    public function show_complete_ride_path($id)
+    {
+
     }
 }
