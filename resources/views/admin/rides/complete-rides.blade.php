@@ -1,13 +1,14 @@
 @extends('layouts.admin-app')
-
+@section('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@stop
+@section('google-script')
+    <script src="https://maps.google.com/maps/api/js?key={{env('GOOGLE_MAP')}}"></script>
+@stop
 @section('content')
-    <!-- begin:: Page -->
     <div class="m-grid m-grid--hor m-grid--root m-page">
-
-    @include('layouts.header')
-    <!-- begin::Body -->
+        @include('layouts.header')
         <div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body">
-
             @include('layouts.sidebar')
             <div class="m-grid__item m-grid__item--fluid m-wrapper">
 
@@ -15,7 +16,19 @@
                 <div class="m-subheader ">
                     <div class="d-flex align-items-center">
                         <div class="mr-auto">
-                            <h3 class="m-subheader__title ">Dashboard</h3>
+                            <h3 class="m-subheader__title m-subheader__title--separator">{{Config('constants.driver-ride')}}</h3>
+                            <ul class="m-subheader__breadcrumbs m-nav m-nav--inline">
+                                <li class="m-nav__item m-nav__item--home">
+                                    <a href="{{url('/admin/dashboard')}}" class="m-nav__link m-nav__link--icon">
+                                        <i class="m-nav__link-icon la la-home"></i>
+                                    </a>
+                                </li>
+                                <li class="m-nav__item">
+                                    <a href="" class="m-nav__link">
+                                        <span class="m-nav__link-text"></span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                         <div>
   							<span class="m-subheader__daterange" id="m_dashboard_daterangepicker">
@@ -23,121 +36,78 @@
 						<span class="m-subheader__daterange-title"></span>
 						<span class="m-subheader__daterange-date m--font-brand"></span>
 					</span>
-					<a href="#"
-                       class="btn btn-sm btn-brand m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill">
+					<a href="#" class="btn btn-sm btn-brand m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill">
 						<i class="la la-angle-down"></i>
 					</a>
 				</span>
                         </div>
                     </div>
                 </div>
-                <!-- END: Subheader -->
                 <div class="m-content">
                     <div class="row">
-                        <div class="col-xl-12">
-                            <div class="m-portlet m-portlet--bordered-semi m-portlet--widget-fit m-portlet--full-height m-portlet--skin-light  m-portlet--rounded-force">
+                        <div class="col-md-12">
+                            <!--begin::Portlet-->
+                            <div class="m-portlet m-portlet--tab">
                                 <div class="m-portlet__head">
                                     <div class="m-portlet__head-caption">
                                         <div class="m-portlet__head-title">
-                                            <h3 class="m-portlet__head-text m--font-light">
-                                                {{ Config('constants.activity') }}
+						<span class="m-portlet__head-icon m--hide">
+						<i class="la la-gear"></i>
+						</span>
+                                            <h3 class="m-portlet__head-text">
+                                                Complete Rides By Driver
                                             </h3>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="m-portlet__body">
-                                    <div class="m-widget17">
-                                        <div class="m-widget17__stats">
-                                            <div class="m-widget17__items m-widget17__items-col1">
-                                                <div class="m-widget17__item">
-						<span class="m-widget17__icon">
-							<i class="flaticon-home-2 m--font-brand"></i>
-						</span>
-                                                    <span class="m-widget17__subtitle">
-							{{Config('constants.passengers')}}
-						</span>
-                                                    <span class="m-widget17__desc">
-							{{ $passengers }}
-						</span>
+                                <!--begin::Form-->
+                                <div class="m-form m-form--fit m-form--label-align-right">
+                                    <div class="m-portlet__body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group m-form__group">
+                                                    <label for="driver_id">Select Driver</label>
+                                                    <select class="form-control m-input m-input--square"
+                                                            name="driver_id" id="driver_id">
+                                                        <option value="">-- Select Pickup Location --</option>
+                                                        @if(is_array($drivers) || is_object($drivers))
+                                                            @foreach($drivers as $driver)
+                                                                <option value="{{$driver->id}}"
+                                                                >
+                                                                    {{$driver->fname}} {{ $driver->lname }}</option>
+                                                            @endforeach
+                                                        @else
+                                                            <option value="">No Data</option>
+                                                        @endif
+                                                    </select>
                                                 </div>
-                                                <div class="m-widget17__item">
-						<span class="m-widget17__icon">
-							<i class="flaticon-paper-plane m--font-info"></i>
-						</span>
-                                                    <span class="m-widget17__subtitle">
-							{{ Config('constants.drivers') }}
-						</span>
-                                                    <span class="m-widget17__desc">
-							{{ $drivers }}
-						</span>
-                                                </div>
-                                            </div>
-                                            <div class="m-widget17__items m-widget17__items-col2">
-                                                <div class="m-widget17__item">
-						<span class="m-widget17__icon">
-							<i class="flaticon-pie-chart m--font-success"></i>
-						</span>
-                                                    <span class="m-widget17__subtitle">
-                            {{ Config('constants.drivers-on-ride') }}
-						</span>
-                                                    <span class="m-widget17__desc">
-							{{ $driver_ready_for_ride }}
-						</span>
-                                                </div>
-                                                <div class="m-widget17__item">
-						<span class="m-widget17__icon">
-							<i class="flaticon-time m--font-danger"></i>
-						</span>
-                                                    <span class="m-widget17__subtitle">
-							{{ Config('constants.drivers-not-on-ride') }}
-						</span>
-                                                    <span class="m-widget17__desc">
-							{{ $driver_not_online }}
-						</span>
-                                                </div>
+                                                <label>
+                                                    <img id="loadingimg" style="display:none" src="{{asset('css/images/loading.gif')}}"/>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!--end::Form-->
                             </div>
+                            <!--end::Portlet-->
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-12">
+                        <div class="col-md-12">
                             <div class="m-portlet m-portlet--mobile">
                                 <div class="m-portlet__body">
                                     <!--begin: Datatable -->
                                     <table class="table table-striped- table-bordered table-hover table-checkable responsive no-wrap" id="data">
                                         <thead>
                                         <tr>
-                                            <th>Passenger</th>
-                                            <th>Pick Address</th>
-                                            <th>Destination</th>
-                                            <th>Status</th>
+                                            <th>Pick Up Address</th>
+                                            <th>Drop Off Address</th>
+                                            <th>Distance Travelled</th>
+                                            <th>Time Taken</th>
+                                            <th>Action</th>
                                         </tr>
                                         </thead>
-                                        @if(is_array($record) || is_object($record))
-                                            @foreach($record as $item)
-                                                <tr>
-                                                    <td>
-                                                        {{$item->fname}} {{ $item->lname }}
-                                                    </td>
-                                                    <td>
-                                                        {{$item->pick_loc_address}}
-                                                    </td>
-                                                    <td>
-                                                        @if($item->dest_loc_address=='')
-                                                            Not Described
-                                                        @else
-                                                            {{ $item->dest_loc_address }}
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        {{$item->status}}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
                                         <tbody>
                                         </tbody>
                                     </table>
@@ -146,7 +116,8 @@
                         </div>
                     </div>
                 </div>
-                <!--Begin::Section-->
+
+                <!-- END: Subheader -->		                      <!--Begin::Section-->
                 <!--End::Section-->
 
                 <!--Begin::Section-->
@@ -167,33 +138,24 @@
                 <!--Begin::Section-->
                 <!--End::Section-->
             </div>
+
         </div>
-        <!-- end:: Body -->
 
-
-        <!-- begin::Footer -->
-    @include('layouts.footer')
-    <!-- end::Footer -->
-
-
+        @include('layouts.footer')
     </div>
-    <!-- end:: Page -->
-
     <!-- begin::Quick Sidebar -->
     <div id="m_quick_sidebar" class="m-quick-sidebar m-quick-sidebar--tabbed m-quick-sidebar--skin-light">
         <div class="m-quick-sidebar__content m--hide">
             <span id="m_quick_sidebar_close" class="m-quick-sidebar__close"><i class="la la-close"></i></span>
             <ul id="m_quick_sidebar_tabs" class="nav nav-tabs m-tabs m-tabs-line m-tabs-line--brand" role="tablist">
                 <li class="nav-item m-tabs__item">
-                    <a class="nav-link m-tabs__link active" data-toggle="tab" href="#m_quick_sidebar_tabs_messenger"
-                       role="tab">Messages</a>
+                    <a class="nav-link m-tabs__link active" data-toggle="tab" href="#m_quick_sidebar_tabs_messenger" role="tab">Messages</a>
                 </li>
                 <li class="nav-item m-tabs__item">
-                    <a class="nav-link m-tabs__link" data-toggle="tab" href="#m_quick_sidebar_tabs_settings" role="tab">Settings</a>
+                    <a class="nav-link m-tabs__link" 		data-toggle="tab" href="#m_quick_sidebar_tabs_settings" role="tab">Settings</a>
                 </li>
                 <li class="nav-item m-tabs__item">
-                    <a class="nav-link m-tabs__link" data-toggle="tab" href="#m_quick_sidebar_tabs_logs"
-                       role="tab">Logs</a>
+                    <a class="nav-link m-tabs__link" data-toggle="tab" href="#m_quick_sidebar_tabs_logs" role="tab">Logs</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -264,7 +226,7 @@
                             <div class="m-messenger__wrapper">
                                 <div class="m-messenger__message m-messenger__message--in">
                                     <div class="m-messenger__message-pic">
-                                        <img src="assets/app/media/img//users/user3.jpg" alt=""/>
+                                        <img src="assets/app/media/img//users/user3.jpg"  alt=""/>
                                     </div>
                                     <div class="m-messenger__message-body">
                                         <div class="m-messenger__message-arrow"></div>
@@ -337,7 +299,7 @@
                             <div class="m-messenger__wrapper">
                                 <div class="m-messenger__message m-messenger__message--in">
                                     <div class="m-messenger__message-pic">
-                                        <img src="assets/app/media/img//users/user3.jpg" alt=""/>
+                                        <img src="assets/app/media/img//users/user3.jpg"  alt=""/>
                                     </div>
                                     <div class="m-messenger__message-body">
                                         <div class="m-messenger__message-arrow"></div>
@@ -499,8 +461,7 @@
                             <div class="m-list-timeline__items">
                                 <div class="m-list-timeline__item">
                                     <span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-                                    <a href="" class="m-list-timeline__text">12 new users registered <span
-                                                class="m-badge m-badge--warning m-badge--wide">important</span></a>
+                                    <a href="" class="m-list-timeline__text">12 new users registered <span class="m-badge m-badge--warning m-badge--wide">important</span></a>
                                     <span class="m-list-timeline__time">Just now</span>
                                 </div>
                                 <div class="m-list-timeline__item">
@@ -515,8 +476,7 @@
                                 </div>
                                 <div class="m-list-timeline__item">
                                     <span class="m-list-timeline__badge m-list-timeline__badge--state-warning"></span>
-                                    <a href="" class="m-list-timeline__text">Database overloaded 89% <span
-                                                class="m-badge m-badge--success m-badge--wide">resolved</span></a>
+                                    <a href="" class="m-list-timeline__text">Database overloaded 89% <span class="m-badge m-badge--success m-badge--wide">resolved</span></a>
                                     <span class="m-list-timeline__time">1 hr</span>
                                 </div>
                                 <div class="m-list-timeline__item">
@@ -526,8 +486,7 @@
                                 </div>
                                 <div class="m-list-timeline__item">
                                     <span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-                                    <a href="" class="m-list-timeline__text">Production server down <span
-                                                class="m-badge m-badge--danger m-badge--wide">pending</span></a>
+                                    <a href="" class="m-list-timeline__text">Production server down <span class="m-badge m-badge--danger m-badge--wide">pending</span></a>
                                     <span class="m-list-timeline__time">3 hrs</span>
                                 </div>
                                 <div class="m-list-timeline__item">
@@ -544,8 +503,7 @@
                             <div class="m-list-timeline__items">
                                 <div class="m-list-timeline__item">
                                     <span class="m-list-timeline__badge m-list-timeline__badge--state-info"></span>
-                                    <a href="" class="m-list-timeline__text">New order received <span
-                                                class="m-badge m-badge--info m-badge--wide">urgent</span></a>
+                                    <a href="" class="m-list-timeline__text">New order received <span class="m-badge m-badge--info m-badge--wide">urgent</span></a>
                                     <span class="m-list-timeline__time">7 hrs</span>
                                 </div>
                                 <div class="m-list-timeline__item">
@@ -570,8 +528,7 @@
                                 </div>
                                 <div class="m-list-timeline__item">
                                     <span class="m-list-timeline__badge m-list-timeline__badge--state-success"></span>
-                                    <a href="" class="m-list-timeline__text">System error <span
-                                                class="m-badge m-badge--info m-badge--wide">pending</span></a>
+                                    <a href="" class="m-list-timeline__text">System error <span class="m-badge m-badge--info m-badge--wide">pending</span></a>
                                     <span class="m-list-timeline__time">2 hrs</span>
                                 </div>
                                 <div class="m-list-timeline__item">
@@ -648,14 +605,17 @@
     <div id="m_scroll_top" class="m-scroll-top">
         <i class="la la-arrow-up"></i>
     </div>
-    <!-- end::Scroll Top -->            <!-- begin::Quick Nav -->
-    <!-- begin::Quick Nav -->
-    <!--begin::Base Scripts -->
 @stop
 @section('scripts')
     <script>
         $(document).ready(function() {
             $('#data').DataTable();
+
+            $('#driver_id').change(function(){
+                var id = $(this).val();
+                $('#loadingimg').show();
+                $('#loadingimg').hide();
+            });
         });
 
     </script>

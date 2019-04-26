@@ -633,7 +633,6 @@
         // Change Marker Location
         function changeMarkerLoc(dmarker,lat,long,path)
         {
-            console.log(path);
             var latlng = new google.maps.LatLng(lat,long);
             dmarker.setPosition(latlng);
             var lineCoordinatePath = new google.maps.Polyline({

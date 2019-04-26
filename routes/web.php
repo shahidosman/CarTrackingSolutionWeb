@@ -27,7 +27,10 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin','as','admin.', 'middleware'
     Route::get('/driver-for-ride/{id}','ManageRideController@driver_for_ride');
     Route::get('/send-driver/{driver_id}/{request_id}','ManageRideController@send_driver');
     Route::get('/current-ride','ManageRideController@current_rides');
+    Route::get('/current-ride-location/{id}','ManageRideController@current_ride_location');
+    Route::get('/current-ride-travelled/{id}','ManageRideController@current_ride_travelled');
     Route::get('/complete-ride','ManageRideController@complete_rides');
+    Route::get('/test-firebase','ManageRideController@test_firebase');
     Route::resource('passengers','ManagePassengerController');
     Route::resource('drivers','ManageDriverController');
     Route::resource('driver-cars','ManageDriverCarController');

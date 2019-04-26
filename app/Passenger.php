@@ -33,4 +33,19 @@ class Passenger extends Model
 //        echo"<pre>"; print_r($passengers->merge($passenger_ride_processed)); exit;
         return $passengers;
     }
+
+    public static function passenger_rides()
+    {
+        $passengers = Passenger::join('ride_requests',function ($join){
+            $join->on('passengers.id','=','ride_requests.passenger_id');
+        })->select([
+            'passengers.fname',
+            'passengers.lname',
+            'passengers.id',
+            'ride_requests.status',
+            'ride_requests.pick_loc_address',
+            'ride_requests.dest_loc_address',
+        ])->get();
+        return $passengers;
+    }
 }

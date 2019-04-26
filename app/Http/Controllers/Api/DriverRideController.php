@@ -187,6 +187,7 @@ class DriverRideController extends Controller
                     }
                 }
                 $ride->is_active = false;
+                $ride->save();
                 $complete_ride = new CompleteRide();
                 $complete_ride->ride_id = $ride->id;
                 $complete_ride->drop_loc_lat = $input['latitude'];
