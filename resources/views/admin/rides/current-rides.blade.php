@@ -610,148 +610,295 @@
 @stop
 @section('scripts')
     <script>
+
         $(document).ready(function() {
+
             var uk = { lat: 51.50, lng: -0.11 };
+
             var map = new google.maps.Map(document.getElementById('map'), {
+
                 zoom: 7,
+
                 center: uk
+
             });
+
             $('#data').DataTable();
+
             function update_map(curr_lat,curr_long,pick_lat,pick_long) {
+
                 var directionsService = new google.maps.DirectionsService();
+
                 var directionsDisplay = new google.maps.DirectionsRenderer();
+
                 var origin = new google.maps.LatLng(curr_lat,curr_long);
+
                 var destination = new google.maps.LatLng(pick_lat,pick_long);
+
                 directionsDisplay.setMap(map);
+
                 directionsService.route({
+
                     origin: origin,
+
                     destination: destination,
+
                     travelMode: 'DRIVING'
+
                 }, function(response, status) {
+
                     if (status === 'OK') {
+
                         directionsDisplay.setDirections(response);
+
                     } else {
+
                         window.alert('Directions request failed due to ' + status);
+
                     }
+
                 });
+
             }
+
             var lineCoordinates = new Array();
+
             function update_marker_distance(lat,long)
+
             {
+
                 lineCoordinates.push = new google.maps.LatLng(lat,long);
+
             }
+
             $('#ride_id').change(function(){
+
                 var id = $(this).val();
+                if(id == ''){
+                    return false;
+                }
                 $('#loadingimg').show();
+
                 $.ajax({
+
                     type:'GET',
+
                     url:'current-ride-location/'+id,
+
                     success: function(data){
+
                         if(data){
+
                             var rows = '';
+
                             $.each(data.data, function (i, item) {
+
                                 rows += '<tr>'
+
                                 rows += '<td>' + item.driver_name + '</td>'
+
                                 rows += '<td>' + item.status + '</td>'
+
                                 rows += '<td>' + item.curr_loc_address + '</td>'
+
                                 rows += '<td>' + item.duration + '</td>'
+
                                 rows += '<td>' + item.distance + '</td>'
+
                                 rows += '</tr>';
+
                                 if(item.status == "Driver Assigned")
+
                                 {
+
                                     update_map(parseFloat(item.curr_loc_lat),parseFloat(item.curr_loc_long),parseFloat(item.pick_loc_lat),parseFloat(item.pick_loc_long));
+
                                 }
+
                                 if(item.status == "Picked" || item.status == "On Way")
+
                                 {
+
+
                                     // var loc = { lat: parseFloat(item.pick_loc_lat), lng: parseFloat(item.pick_loc_long) };
+
                                     // var marker = new google.maps.Marker({
+
                                     //     position: loc,
+
                                     //     label: item.driver_name[0],
+
                                     //     visible: true,
+
                                     // });
+
                                     // marker.setMap(map);
+
                                     // map.setZoom(17);
+
                                     // map.panTo(loc);
+
                                     //ToDo Get a list of current locations from current_rides table
+
                                     $.ajax({
-                                       type: 'GET',
-                                       url: 'current-ride-travelled/'+item.id,
+
+                                        type: 'GET',
+
+                                        url: 'current-ride-travelled/'+item.id,
+
                                         success: function (polyLineData) {
-                                           var lastLoc = '';
-                                           for(i=0;i<polyLineData.length; i++)
-                                           {
-                                              // update_marker_distance(parseFloat(polyLineData[i]['curr_loc_lat']),parseFloat(polyLineData[i]['curr_loc_long']));
-                                               var location = { lat: parseFloat(polyLineData[i]['curr_loc_lat']), lng: parseFloat(polyLineData[i]['curr_loc_long']) }
-                                               lastLoc = location;
-                                           }
-                                           var latlng = new google.maps.LatLng(lastLoc);
-                                           //  marker.setPosition(latlng)
-                                           // console.log(latlng);
-                                           // marker.setPosition(lastLoc);
+                                            var lastLoc = '';
+                                            var lastLoc2 = [];
+
+                                            for(i=0;i<polyLineData.length; i++)
+
+                                            {
+                                                var location = { lat: parseFloat(polyLineData[i]['curr_loc_lat']), lng: parseFloat(polyLineData[i]['curr_loc_long']) }
+
+                                                lastLoc = location;
+                                                lastLoc2.push(location);
+                                            }
+                                            //start point Marker start
+                                            var firstLoc = { lat: parseFloat(polyLineData[0]['curr_loc_lat']), lng: parseFloat(polyLineData[0]['curr_loc_long']) }
+                                            var latlng = new google.maps.LatLng(firstLoc);
+                                            var startPointMarker = new google.maps.Marker({
+                                                position: latlng,
+                                                icon: '{{ asset('css/images/startMarker.png') }}',
+                                                map: map
+                                            });
+                                            //start point Marker end
+
+                                            //end point Marker start
+                                            var latlng = new google.maps.LatLng(lastLoc);
                                             var dmarker = new google.maps.Marker({
                                                 position: latlng,
                                                 label: item.driver_name[0],
                                                 visible: true,
                                             });
+
                                             dmarker.setMap(map);
-                                            map.setZoom(17);
+
+                                            map.setZoom(13);
+
                                             map.panTo(latlng);
+                                            //end point Marker end
+
+                                            //tracking line start
                                             var lineCoordinatePath = new google.maps.Polyline({
-                                                path: lineCoordinates,
+
+                                                path: lastLoc2,
+
                                                 geodesic: true,
+
                                                 map: map,
+
                                                 strokeColor: '#FF0000',
+
                                                 strokeOpacity: 1.0,
+
                                                 strokeWeight: 2
+
                                             });
+                                            lineCoordinatePath.setMap(map);
+                                            //tracking line end
+
                                         }
+
                                     });
+
                                     //ToDo Just show current location via marker if destination location is not set
+
                                     //ToDo if destination location is set update the current ride locations
+
                                 }
+
                             });
+
                             $('#data').DataTable().destroy();
+
                             $('#data').find('tbody').html(rows);
+
                             $('#data').DataTable().draw();
+
                             $('#loadingimg').hide();
+
                         }
+
                     }
+
                 })
+
             });
+
         });
+
         var coveredCoordinates = [];
+
         function update_marker(lat,long)
+
         {
+
             alert(lat,long);
+
             coveredCoordinates.push(new google.maps.LatLng(lat,long));
+
             console.log(coveredCoordinates);
+
         }
 
+
+
         $('#confirm_delete').click(function(){
+
             var id = $('#delete_id').val();
+
             $('#m_modal_1').modal('toggle');
+
             $.ajaxSetup({
+
                 headers: {
+
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            // alert(id);
-            // $.post("passengers/"+id, {"_method":"delete"}, function(data){
-            //     location.reload();
-            // });
-            $.ajax({
-                type:'POST',
-                data:{
-                    _method: "DELETE",
-                },
-                url:'drivers/'+id,
-                success: function(data){
-                    if(data){
-                        location.reload();
-                    }
+
                 }
 
+            });
+
+            // alert(id);
+
+            // $.post("passengers/"+id, {"_method":"delete"}, function(data){
+
+            //     location.reload();
+
+            // });
+
+            $.ajax({
+
+                type:'POST',
+
+                data:{
+
+                    _method: "DELETE",
+
+                },
+
+                url:'drivers/'+id,
+
+                success: function(data){
+
+                    if(data){
+
+                        location.reload();
+
+                    }
+
+                }
+
+
+
             })
+
         });
+
     </script>
 @stop

@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\CurrentRide;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
+use App\CompleteRide;
 require base_path().'/vendor/autoload.php';
 class ManageRideController extends Controller
 {
@@ -234,9 +235,33 @@ class ManageRideController extends Controller
         return view('admin.rides.complete-rides',compact('drivers'));
     }
 
-    public function complete_rides_by_driver($id)
+    public function completed_rides_by_driver($id)
     {
-        //ToDo we have only id of driver
+        $completeRides = CompleteRide::getCompleteRide($id);
+        foreach ($completeRides as $key => $completeRide){
+
+            $pickupLat = $completeRide->pick_loc_lat;
+            $pickupLong = $completeRide->pick_loc_long;
+            $pickUpAddress = file_get_contents('https://maps.googleapis.com/maps/api/geocode/json?latlng='.$pickupLat.','.$pickupLong.'&sensor=false&key='.env('GOOGLE_MAP'));
+
+            $output                 = json_decode($pickUpAddress);
+            $pickUpAddressStatus    = $output->status;
+            $pickUpAddress          = ($pickUpAddressStatus=="OK")?$output->results[0]->formatted_address:'';
+
+            $dropLat = $completeRide->drop_loc_lat;
+            $dropLong = $completeRide->drop_loc_long;
+            $dropAddress = file_get_contents('https://maps.googleapis.com/maps/api/geocode/json?latlng='.$dropLat.','.$dropLong.'&sensor=false&key='.env('GOOGLE_MAP'));
+
+            $output                 = json_decode($dropAddress);
+            $dropAddressStatus    = $output->status;
+            $dropAddress          = ($dropAddressStatus=="OK")?$output->results[0]->formatted_address:'';
+
+            $completeRides[$key]->pickUpAddress = $pickUpAddress;
+            $completeRides[$key]->dropAddress = $dropAddress;
+
+        }
+
+        return response()->json($completeRides);
     }
 
     public function show_complete_ride_path($id)
